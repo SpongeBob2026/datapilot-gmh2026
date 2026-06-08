@@ -65,7 +65,7 @@ def render_sidebar(file_name=None, analysis_result=None):
     st.sidebar.markdown("---")
 
     st.sidebar.markdown("### 版本信息")
-    st.sidebar.caption("当前版本：v0.5.1")
+    st.sidebar.caption("当前版本：v0.6")
     st.sidebar.caption("结构：主入口 + pipeline + sections")
     st.sidebar.caption("阶段：基础重构与工作台界面")
 

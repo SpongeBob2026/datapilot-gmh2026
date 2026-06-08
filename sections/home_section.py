@@ -11,5 +11,5 @@ def render_home_page():
         3. 不显示多余功能介绍
     """
 
-    st.title("🌈 DataPilot：AI 数据分析工作台 v0.5.1")
+    st.title("🌈 DataPilot：AI 数据分析工作台 v0.6")
     st.caption("上传 Excel / CSV，自动生成数据分析结果。")

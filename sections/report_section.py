@@ -2,6 +2,7 @@ import streamlit as st
 
 from pipeline.report_context import build_report_prompt
 from utils.deepseek_client import call_deepseek
+from utils.error_handler import show_ai_report_error
 
 
 def load_prompt_template(prompt_path="prompts/general_report_prompt.txt"):
@@ -16,26 +17,21 @@ def render_report_section(file_name, analysis_result):
     """
     渲染 AI 分析报告区域。
 
-    输入：
-        file_name: 上传文件名
-        analysis_result: pipeline/analysis_pipeline.py 返回的统一分析结果
-
     作用：
-        1. 读取提示词模板
+        1. 选择报告类型
         2. 构建 AI 报告 prompt
         3. 调用 DeepSeek 生成报告
-        4. 展示报告结果
-
-    设计原则：
-        app.py 不直接负责 AI 报告生成细节。
+        4. 将报告保存在 session_state 中
+        5. 提供 Markdown 下载和手动复制区域
     """
 
     st.subheader("AI 分析报告")
 
     st.info(
-        "为了降低 API 成本和隐私风险，AI 只会读取统计摘要，"
-        "不会读取完整原始表格。"
+        "AI 只读取统计摘要，不读取完整原始表格。生成报告会消耗 API 额度。"
     )
+
+    report_key = f"report_{file_name}"
 
     report_type = st.radio(
         "请选择报告类型",
@@ -54,7 +50,18 @@ def render_report_section(file_name, analysis_result):
             "关键发现和 3 条后续建议。避免过长。"
         )
 
-    if st.button("生成 AI 数据分析报告"):
+    col1, col2 = st.columns([1, 3])
+
+    with col1:
+        generate_clicked = st.button(
+            "生成 AI 数据分析报告",
+            use_container_width=True
+        )
+
+    with col2:
+        st.caption("建议先检查数据质量，再生成正式报告。")
+
+    if generate_clicked:
         with st.spinner("正在生成分析报告..."):
             try:
                 prompt_template = load_prompt_template()
@@ -65,17 +72,31 @@ def render_report_section(file_name, analysis_result):
                 )
 
                 report = call_deepseek(prompt)
-                st.markdown(report)
-
-                st.download_button(
-                    label="下载 Markdown 报告",
-                    data=report,
-                    file_name="datapilot_report.md",
-                    mime="text/markdown"
-                )
+                st.session_state[report_key] = report
 
             except Exception as e:
-                st.error(f"AI 报告生成失败：{e}")
-                st.warning(
-                    "请检查 DeepSeek API Key、模型名称、账户余额和网络连接是否正常。"
-                )
+                show_ai_report_error(e)
+
+    report = st.session_state.get(report_key)
+
+    if report:
+        st.markdown("### 报告结果")
+        st.markdown(report)
+
+        st.download_button(
+            label="下载 Markdown 报告",
+            data=report,
+            file_name="datapilot_report.md",
+            mime="text/markdown",
+            use_container_width=True
+        )
+
+        with st.expander("复制报告文本", expanded=False):
+            st.text_area(
+                "可以在这里全选复制报告内容",
+                value=report,
+                height=300
+            )
+
+    else:
+        st.info("点击上方按钮后，系统会在这里显示 AI 分析报告。")
