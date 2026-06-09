@@ -1,15 +1,34 @@
 import os
+
+import streamlit as st
 from dotenv import load_dotenv
 from openai import OpenAI
 
 load_dotenv()
 
 
+def get_secret_value(key, default=None):
+    """
+    优先从 Streamlit secrets 读取配置；
+    如果没有，再从 .env / 环境变量读取。
+    这样本地开发和 Streamlit Cloud 部署都能兼容。
+    """
+    try:
+        if key in st.secrets:
+            return st.secrets[key]
+    except Exception:
+        pass
+
+    return os.getenv(key, default)
+
+
 def get_deepseek_client():
-    api_key = os.getenv("DEEPSEEK_API_KEY")
+    api_key = get_secret_value("DEEPSEEK_API_KEY")
 
     if not api_key:
-        raise ValueError("没有找到 DEEPSEEK_API_KEY，请检查 .env 文件。")
+        raise ValueError(
+            "没有找到 DEEPSEEK_API_KEY。请在本地 .env 或 Streamlit Secrets 中配置。"
+        )
 
     return OpenAI(
         api_key=api_key,
@@ -19,7 +38,7 @@ def get_deepseek_client():
 
 def call_deepseek(prompt, temperature=0.3):
     client = get_deepseek_client()
-    model = os.getenv("DEEPSEEK_MODEL", "deepseek-v4-flash")
+    model = get_secret_value("DEEPSEEK_MODEL", "deepseek-chat")
 
     response = client.chat.completions.create(
         model=model,
