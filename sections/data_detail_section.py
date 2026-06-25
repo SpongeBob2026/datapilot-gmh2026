@@ -33,7 +33,7 @@ def render_data_detail_section(analysis_result):
         if df is None or df.empty:
             st.warning("当前没有可预览的数据。")
         else:
-            st.dataframe(df.head(50), use_container_width=True)
+            st.dataframe(df.head(50), width="stretch")
 
             st.caption(
                 f"当前仅展示前 50 行。完整数据共有 {overview.get('行数', 0)} 行，"
@@ -46,7 +46,7 @@ def render_data_detail_section(analysis_result):
         if column_quality is None or column_quality.empty:
             st.info("暂无字段质量检查结果。")
         else:
-            st.dataframe(column_quality, use_container_width=True)
+            st.dataframe(column_quality, width="stretch")
 
             missing_total = overview.get("缺失值总数", 0)
             duplicate_rows = overview.get("重复行数", 0)
@@ -65,7 +65,7 @@ def render_data_detail_section(analysis_result):
         if numeric_summary is None or numeric_summary.empty:
             st.info("当前数据中没有识别到数值字段。")
         else:
-            st.dataframe(numeric_summary, use_container_width=True)
+            st.dataframe(numeric_summary, width="stretch")
 
             st.caption(
                 "说明：这里展示数值字段的非空数量、平均值、标准差、最小值、分位数和最大值。"

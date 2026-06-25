@@ -31,7 +31,7 @@ def render_quality_section(analysis_result):
         if anomaly_summary is None or anomaly_summary.empty:
             st.success("当前数据中没有检测到明显的数值异常，或数值字段数量不足。")
         else:
-            st.dataframe(anomaly_summary, use_container_width=True)
+            st.dataframe(anomaly_summary, width="stretch")
 
             high_risk = anomaly_summary[anomaly_summary["异常值数量"] > 0]
 
@@ -39,7 +39,7 @@ def render_quality_section(analysis_result):
                 st.success("数值字段未发现明显异常值。")
             else:
                 st.warning("以下字段检测到异常值，建议优先核查：")
-                st.dataframe(high_risk, use_container_width=True)
+                st.dataframe(high_risk, width="stretch")
 
                 st.markdown("#### 处理建议")
                 st.write(
@@ -54,18 +54,18 @@ def render_quality_section(analysis_result):
         if cleaning_suggestions is None or cleaning_suggestions.empty:
             st.success("当前数据暂未发现明显需要清洗的问题。")
         else:
-            st.dataframe(cleaning_suggestions, use_container_width=True)
+            st.dataframe(cleaning_suggestions, width="stretch")
 
             high_priority = cleaning_suggestions[cleaning_suggestions["优先级"] == "高"]
             medium_priority = cleaning_suggestions[cleaning_suggestions["优先级"] == "中"]
 
             if not high_priority.empty:
                 st.warning("高优先级清洗问题：")
-                st.dataframe(high_priority, use_container_width=True)
+                st.dataframe(high_priority, width="stretch")
 
             if not medium_priority.empty:
                 st.info("中优先级清洗建议：")
-                st.dataframe(medium_priority, use_container_width=True)
+                st.dataframe(medium_priority, width="stretch")
 
             st.markdown("#### 清洗原则")
             st.write(

@@ -4,9 +4,10 @@ from core.anomaly_detector import detect_numeric_anomalies
 from core.correlation_analysis import get_correlation_matrix, get_strong_correlations
 from core.chart_recommender import recommend_charts
 from core.cleaning_advisor import generate_cleaning_suggestions
+from core.scenario_analysis import analyze_scenario
 
 
-def run_general_analysis(df):
+def run_general_analysis(df, analysis_mode="通用表格分析"):
     """
     通用表格分析主流程。
 
@@ -31,6 +32,7 @@ def run_general_analysis(df):
     correlation_matrix = get_correlation_matrix(df)
     strong_correlations = get_strong_correlations(df)
     chart_recommendations = recommend_charts(df, fields)
+    scenario_result = analyze_scenario(df, fields, analysis_mode)
 
     cleaning_suggestions = generate_cleaning_suggestions(
         df=df,
@@ -51,6 +53,8 @@ def run_general_analysis(df):
         "strong_correlations": strong_correlations,
         "chart_recommendations": chart_recommendations,
         "cleaning_suggestions": cleaning_suggestions,
+        "analysis_mode": analysis_mode,
+        "scenario_result": scenario_result,
     }
 
     return analysis_result
@@ -75,6 +79,7 @@ def get_analysis_status(analysis_result):
     anomaly_summary = analysis_result.get("anomaly_summary")
     cleaning_suggestions = analysis_result.get("cleaning_suggestions")
     correlation_matrix = analysis_result.get("correlation_matrix")
+    scenario_result = analysis_result.get("scenario_result", {})
 
     if df is not None and not df.empty:
         status.append({
@@ -134,6 +139,12 @@ def get_analysis_status(analysis_result):
         status.append({
             "状态": "成功",
             "说明": "已生成清洗建议"
+        })
+
+    if scenario_result and scenario_result.get("场景名称") != "通用表格分析":
+        status.append({
+            "状态": "成功",
+            "说明": f"已生成{scenario_result.get('场景名称')}"
         })
 
     return status

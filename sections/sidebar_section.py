@@ -1,10 +1,27 @@
 import streamlit as st
 
-from config import APP_STAGE, APP_VERSION
+from config import ANALYSIS_MODES, APP_STAGE, APP_VERSION
 from pipeline.analysis_pipeline import get_analysis_status
 
 
-def render_sidebar(file_name=None, analysis_result=None):
+def render_analysis_mode_selector():
+    st.sidebar.title("DataPilot")
+
+    st.sidebar.caption("AI 数据分析工作台")
+
+    st.sidebar.markdown("---")
+
+    st.sidebar.markdown("### 分析模式")
+
+    return st.sidebar.radio(
+        "请选择分析模式",
+        ANALYSIS_MODES,
+        key="analysis_mode",
+        label_visibility="collapsed"
+    )
+
+
+def render_sidebar(file_name=None, analysis_result=None, analysis_mode=None, include_mode_selector=True):
     """
     渲染 DataPilot 左侧边栏。
 
@@ -20,19 +37,8 @@ def render_sidebar(file_name=None, analysis_result=None):
         后续增加登录、历史记录、多分析模式时，优先修改本文件。
     """
 
-    st.sidebar.title("DataPilot")
-
-    st.sidebar.caption("AI 数据分析工作台")
-
-    st.sidebar.markdown("---")
-
-    st.sidebar.markdown("### 分析模式")
-
-    mode = st.sidebar.radio(
-        "请选择分析模式",
-        ["通用表格分析"],
-        label_visibility="collapsed"
-    )
+    if include_mode_selector:
+        analysis_mode = render_analysis_mode_selector()
 
     st.sidebar.markdown("---")
 
@@ -70,4 +76,4 @@ def render_sidebar(file_name=None, analysis_result=None):
     st.sidebar.caption("结构：主入口 + pipeline + sections")
     st.sidebar.caption(f"阶段：{APP_STAGE}")
 
-    return mode
+    return analysis_mode

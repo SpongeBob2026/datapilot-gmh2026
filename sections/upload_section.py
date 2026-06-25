@@ -1,5 +1,7 @@
 import streamlit as st
 
+from config import SAMPLE_DATASETS
+
 
 def render_upload_section():
     """
@@ -7,7 +9,7 @@ def render_upload_section():
 
     返回：
         uploaded_file: 用户上传的文件
-        use_sample: 是否使用示例数据
+        sample_key: 示例数据 key
     """
 
     st.markdown(
@@ -71,19 +73,31 @@ def render_upload_section():
     )
 
     if uploaded_file is not None:
-        st.session_state["use_sample_data"] = False
+        st.session_state["sample_data_key"] = None
 
     col1, col2 = st.columns([1, 3])
 
     with col1:
-        if st.button("体验示例数据", use_container_width=True):
-            st.session_state["use_sample_data"] = True
+        sample_options = list(SAMPLE_DATASETS.keys())
+        selected_sample = st.selectbox(
+            "示例数据",
+            sample_options,
+            format_func=lambda key: SAMPLE_DATASETS[key]["label"],
+            label_visibility="collapsed",
+        )
+
+        if st.button("体验示例数据", width="stretch"):
+            st.session_state["sample_data_key"] = selected_sample
+            st.session_state["analysis_mode"] = SAMPLE_DATASETS[selected_sample]["mode"]
 
     with col2:
-        if st.session_state.get("use_sample_data", False) and uploaded_file is None:
-            st.success("已选择销售示例数据。上传新文件后会自动切换为你的数据。")
+        sample_key = st.session_state.get("sample_data_key")
+        if sample_key and uploaded_file is None:
+            sample_label = SAMPLE_DATASETS[sample_key]["label"]
+            sample_mode = SAMPLE_DATASETS[sample_key]["mode"]
+            st.success(f"已选择{sample_label}，并切换到{sample_mode}。上传新文件后会自动切换为你的数据。")
         else:
-            st.caption("没有数据文件时，可先用销售示例数据体验公开测试版。")
+            st.caption("没有数据文件时，可先选择一个示例数据体验场景化分析。")
 
     with st.expander("文件要求", expanded=False):
         st.markdown(
@@ -96,6 +110,6 @@ def render_upload_section():
             """
         )
 
-    use_sample = st.session_state.get("use_sample_data", False)
+    sample_key = st.session_state.get("sample_data_key")
 
-    return uploaded_file, use_sample
+    return uploaded_file, sample_key

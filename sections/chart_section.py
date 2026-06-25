@@ -53,7 +53,7 @@ def render_chart_section(analysis_result):
         if chart_recommendations is None or chart_recommendations.empty:
             st.info("当前数据字段不足，暂时无法生成图表推荐。")
         else:
-            st.dataframe(chart_recommendations, use_container_width=True)
+            st.dataframe(chart_recommendations, width="stretch")
 
             st.markdown("#### 使用建议")
             st.write(
@@ -70,14 +70,14 @@ def render_chart_section(analysis_result):
             st.info("当前数据中的数值字段少于 2 个，无法进行相关性分析。")
         else:
             st.markdown("#### 数值字段相关系数矩阵")
-            st.dataframe(correlation_matrix, use_container_width=True)
+            st.dataframe(correlation_matrix, width="stretch")
 
             st.markdown("#### 强相关字段对")
 
             if strong_correlations is None or strong_correlations.empty:
                 st.info("暂未发现绝对值大于等于 0.7 的强相关字段对。")
             else:
-                st.dataframe(strong_correlations, use_container_width=True)
+                st.dataframe(strong_correlations, width="stretch")
 
                 st.markdown("#### 解读提醒")
                 st.write(

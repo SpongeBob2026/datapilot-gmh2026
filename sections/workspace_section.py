@@ -6,6 +6,7 @@ from sections.data_detail_section import render_data_detail_section
 from sections.quality_section import render_quality_section
 from sections.chart_section import render_chart_section
 from sections.report_section import render_report_section
+from sections.scenario_section import render_scenario_section
 
 
 def render_workspace(file_name, analysis_result):
@@ -35,10 +36,11 @@ def render_workspace(file_name, analysis_result):
 
     st.markdown("---")
 
-    tab1, tab2, tab3, tab4 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
         "数据详情",
         "数据质量",
         "图表分析",
+        "场景分析",
         "AI 报告"
     ])
 
@@ -52,4 +54,7 @@ def render_workspace(file_name, analysis_result):
         render_chart_section(analysis_result)
 
     with tab4:
+        render_scenario_section(analysis_result)
+
+    with tab5:
         render_report_section(file_name, analysis_result)

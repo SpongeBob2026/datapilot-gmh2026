@@ -1,9 +1,10 @@
 import streamlit as st
 
+from config import SAMPLE_DATASETS
 from core.file_loader import load_uploaded_file, load_local_file
 from pipeline.analysis_pipeline import run_general_analysis
 
-from sections.sidebar_section import render_sidebar
+from sections.sidebar_section import render_analysis_mode_selector, render_sidebar
 from sections.home_section import render_home_page
 from sections.upload_section import render_upload_section
 from sections.privacy_notice_section import render_privacy_notice
@@ -38,19 +39,23 @@ def main():
 
     render_privacy_notice()
 
-    uploaded_file, use_sample = render_upload_section()
+    analysis_mode = render_analysis_mode_selector()
 
-    if uploaded_file is None and not use_sample:
-        render_sidebar()
+    uploaded_file, sample_key = render_upload_section()
+
+    if uploaded_file is None and not sample_key:
+        render_sidebar(analysis_mode=analysis_mode, include_mode_selector=False)
         return
 
-    if use_sample and uploaded_file is None:
-        file_name = "sales_sample.csv"
+    if sample_key and uploaded_file is None:
+        sample_config = SAMPLE_DATASETS[sample_key]
+        file_name = sample_config["file_name"]
+        analysis_mode = sample_config["mode"]
 
         try:
-            df = load_local_file("sample_data/sales_sample.csv")
+            df = load_local_file(sample_config["path"])
         except Exception as e:
-            render_sidebar(file_name=file_name)
+            render_sidebar(file_name=file_name, analysis_mode=analysis_mode, include_mode_selector=False)
             show_sample_data_error(e)
             st.stop()
 
@@ -60,25 +65,27 @@ def main():
         try:
             df = load_uploaded_file(uploaded_file)
         except Exception as e:
-            render_sidebar(file_name=file_name)
+            render_sidebar(file_name=file_name, analysis_mode=analysis_mode, include_mode_selector=False)
             show_file_read_error(e)
             st.stop()
 
     if df.empty:
-        render_sidebar(file_name=file_name)
+        render_sidebar(file_name=file_name, analysis_mode=analysis_mode, include_mode_selector=False)
         show_empty_data_error()
         st.stop()
 
     try:
-        analysis_result = run_general_analysis(df)
+        analysis_result = run_general_analysis(df, analysis_mode=analysis_mode)
     except Exception as e:
-        render_sidebar(file_name=file_name)
+        render_sidebar(file_name=file_name, analysis_mode=analysis_mode, include_mode_selector=False)
         show_analysis_error(e)
         st.stop()
 
     render_sidebar(
         file_name=file_name,
-        analysis_result=analysis_result
+        analysis_result=analysis_result,
+        analysis_mode=analysis_mode,
+        include_mode_selector=False
     )
 
     render_workspace(

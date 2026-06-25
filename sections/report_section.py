@@ -26,6 +26,7 @@ def render_report_section(file_name, analysis_result):
     """
 
     st.subheader("AI 分析报告")
+    analysis_mode = analysis_result.get("analysis_mode", "通用表格分析")
 
     st.info(
         "AI 只读取统计摘要，不读取完整原始表格。生成报告会消耗 API 额度。"
@@ -37,7 +38,7 @@ def render_report_section(file_name, analysis_result):
         horizontal=True
     )
 
-    report_key = f"report_{file_name}_{report_type}"
+    report_key = f"report_{file_name}_{analysis_mode}_{report_type}"
     if report_type == "详细分析报告":
         extra_instruction = (
             "\n\n请生成一份较完整的数据分析报告，包含数据概况、字段结构、"
@@ -49,12 +50,18 @@ def render_report_section(file_name, analysis_result):
             "关键发现和 3 条后续建议。避免过长。"
         )
 
+    if analysis_mode != "通用表格分析":
+        extra_instruction += (
+            f"\n\n当前分析模式是：{analysis_mode}。请把报告重点放在这个场景的真实问题上，"
+            "优先使用“场景化分析”中的洞察，并将通用统计结果转化为用户能直接执行的场景建议。"
+        )
+
     col1, col2 = st.columns([1, 3])
 
     with col1:
         generate_clicked = st.button(
-            "生成 AI 数据分析报告",
-            use_container_width=True
+            f"生成{analysis_mode}报告",
+            width="stretch"
         )
 
     with col2:
@@ -89,7 +96,7 @@ def render_report_section(file_name, analysis_result):
             data=report,
             file_name=report_file_name,
             mime="text/markdown",
-            use_container_width=True
+            width="stretch"
         )
 
         with st.expander("复制报告文本", expanded=True):

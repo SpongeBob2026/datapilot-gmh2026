@@ -45,9 +45,13 @@ def build_report_context(file_name, analysis_result):
     strong_correlations = analysis_result.get("strong_correlations")
     chart_recommendations = analysis_result.get("chart_recommendations")
     cleaning_suggestions = analysis_result.get("cleaning_suggestions")
+    analysis_mode = analysis_result.get("analysis_mode", "通用表格分析")
+    scenario_result = analysis_result.get("scenario_result", {})
+    scenario_insights = scenario_result.get("洞察列表")
 
     report_context = {
         "文件名": file_name,
+        "分析模式": analysis_mode,
         "数据概况": overview,
         "字段识别": fields,
         "字段质量": dataframe_to_records(column_quality, limit=30),
@@ -57,6 +61,11 @@ def build_report_context(file_name, analysis_result):
         "强相关字段对": dataframe_to_records(strong_correlations, limit=20),
         "图表推荐": dataframe_to_records(chart_recommendations, limit=20),
         "数据清洗建议": dataframe_to_records(cleaning_suggestions, limit=30),
+        "场景化分析": {
+            "场景名称": scenario_result.get("场景名称"),
+            "场景说明": scenario_result.get("场景说明"),
+            "场景洞察": dataframe_to_records(scenario_insights, limit=30),
+        },
     }
 
     return report_context
