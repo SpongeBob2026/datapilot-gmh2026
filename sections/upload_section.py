@@ -58,8 +58,8 @@ def render_upload_section():
 
     st.markdown(
         """
-        <div class="upload-panel-title">上传数据文件</div>
-        <div class="upload-panel-desc">支持 CSV / XLSX，建议首行为字段名。</div>
+        <div class="upload-panel-title">开始分析</div>
+        <div class="upload-panel-desc">上传 CSV / XLSX，或使用内置示例数据体验完整流程。</div>
         """,
         unsafe_allow_html=True
     )
@@ -76,11 +76,14 @@ def render_upload_section():
     col1, col2 = st.columns([1, 3])
 
     with col1:
-        if st.button("使用销售示例数据", use_container_width=True):
+        if st.button("体验示例数据", use_container_width=True):
             st.session_state["use_sample_data"] = True
 
     with col2:
-        st.caption("没有数据文件时，可先用示例数据体验。")
+        if st.session_state.get("use_sample_data", False) and uploaded_file is None:
+            st.success("已选择销售示例数据。上传新文件后会自动切换为你的数据。")
+        else:
+            st.caption("没有数据文件时，可先用销售示例数据体验公开测试版。")
 
     with st.expander("文件要求", expanded=False):
         st.markdown(

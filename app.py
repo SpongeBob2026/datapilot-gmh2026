@@ -8,7 +8,12 @@ from sections.home_section import render_home_page
 from sections.upload_section import render_upload_section
 from sections.privacy_notice_section import render_privacy_notice
 from sections.workspace_section import render_workspace
-from utils.error_handler import show_file_read_error, show_empty_data_error, show_sample_data_error
+from utils.error_handler import (
+    show_analysis_error,
+    show_empty_data_error,
+    show_file_read_error,
+    show_sample_data_error,
+)
 
 
 st.set_page_config(
@@ -64,7 +69,12 @@ def main():
         show_empty_data_error()
         st.stop()
 
-    analysis_result = run_general_analysis(df)
+    try:
+        analysis_result = run_general_analysis(df)
+    except Exception as e:
+        render_sidebar(file_name=file_name)
+        show_analysis_error(e)
+        st.stop()
 
     render_sidebar(
         file_name=file_name,

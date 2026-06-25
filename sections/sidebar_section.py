@@ -1,5 +1,6 @@
 import streamlit as st
 
+from config import APP_STAGE, APP_VERSION
 from pipeline.analysis_pipeline import get_analysis_status
 
 
@@ -65,8 +66,8 @@ def render_sidebar(file_name=None, analysis_result=None):
     st.sidebar.markdown("---")
 
     st.sidebar.markdown("### 版本信息")
-    st.sidebar.caption("当前版本：v0.6")
+    st.sidebar.caption(f"当前版本：{APP_VERSION}")
     st.sidebar.caption("结构：主入口 + pipeline + sections")
-    st.sidebar.caption("阶段：基础重构与工作台界面")
+    st.sidebar.caption(f"阶段：{APP_STAGE}")
 
     return mode

@@ -46,6 +46,22 @@ def show_ai_report_error(error):
         st.code(str(error))
 
 
+def show_analysis_error(error):
+    """
+    显示数据分析流程失败提示。
+    """
+    st.error("数据分析失败。")
+
+    st.markdown("可能原因：")
+    st.write("1. 字段类型过于复杂，系统无法自动识别。")
+    st.write("2. 数据中存在无法计算的异常格式。")
+    st.write("3. 文件行列结构不规则，例如多层表头或合并单元格。")
+    st.write("4. 当前文件过大，浏览器或运行环境资源不足。")
+
+    with st.expander("查看技术错误信息", expanded=False):
+        st.code(str(error))
+
+
 def show_sample_data_error(error):
     """
     显示示例数据读取失败提示。

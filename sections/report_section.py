@@ -31,14 +31,13 @@ def render_report_section(file_name, analysis_result):
         "AI 只读取统计摘要，不读取完整原始表格。生成报告会消耗 API 额度。"
     )
 
-    report_key = f"report_{file_name}"
-
     report_type = st.radio(
         "请选择报告类型",
         ["详细分析报告", "简版分析报告"],
         horizontal=True
     )
 
+    report_key = f"report_{file_name}_{report_type}"
     if report_type == "详细分析报告":
         extra_instruction = (
             "\n\n请生成一份较完整的数据分析报告，包含数据概况、字段结构、"
@@ -83,19 +82,22 @@ def render_report_section(file_name, analysis_result):
         st.markdown("### 报告结果")
         st.markdown(report)
 
+        report_file_name = f"{file_name.rsplit('.', 1)[0]}_datapilot_report.md"
+
         st.download_button(
             label="下载 Markdown 报告",
             data=report,
-            file_name="datapilot_report.md",
+            file_name=report_file_name,
             mime="text/markdown",
             use_container_width=True
         )
 
-        with st.expander("复制报告文本", expanded=False):
+        with st.expander("复制报告文本", expanded=True):
             st.text_area(
-                "可以在这里全选复制报告内容",
+                "报告正文",
                 value=report,
-                height=300
+                height=320,
+                help="点击文本框后全选复制即可粘贴到文档、飞书、Notion 或邮件中。"
             )
 
     else:

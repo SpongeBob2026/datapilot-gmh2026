@@ -1,4 +1,10 @@
+import os
+import tempfile
+
 import pandas as pd
+
+os.environ.setdefault("MPLCONFIGDIR", os.path.join(tempfile.gettempdir(), "datapilot_matplotlib"))
+
 import matplotlib.pyplot as plt
 
 
